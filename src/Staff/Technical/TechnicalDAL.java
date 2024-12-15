@@ -1,161 +1,163 @@
 package Staff.Technical;
 
 import Utils.DbConnection;
+
+import java.math.BigDecimal;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class TechnicalDAL {
 
     // Insert a new Technical record
-    public static boolean insertTechnical(Technical technical) {
-        String insertQuery = "INSERT INTO Technical (id, technicalSkills, certifications, workLocation, lastTrainingDate) "
-                + "VALUES (?, ?, ?, ?, ?)";
+    public boolean insertTechnical(Technical technical) {
+        String query = "INSERT INTO technical (id, firstName, lastName, email, phoneNumber, address, hireDate, salary, " +
+                "status, department, jobTitle, workingHours, technicalSkills, certifications, workLocation, lastTrainingDate) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
-            // Insert Technical-specific fields
-            stmt.setInt(1, technical.getId());
-            stmt.setString(2, technical.getTechnicalSkills());
-            stmt.setString(3, technical.getCertifications());
-            stmt.setString(4, technical.getWorkLocation());
-            stmt.setDate(5, new java.sql.Date(technical.getLastTrainingDate().getTime()));
+            statement.setInt(1, technical.getId());
+            statement.setString(2, technical.getFirstName());
+            statement.setString(3, technical.getLastName());
+            statement.setString(4, technical.getEmail());
+            statement.setString(5, technical.getPhoneNumber());
+            statement.setString(6, technical.getAddress());
+            statement.setDate(7, new java.sql.Date(technical.getHireDate().getTime()));
+            statement.setBigDecimal(8, technical.getSalary());
+            statement.setString(9, technical.getStatus());
+            statement.setString(10, technical.getDepartment());
+            statement.setString(11, technical.getJobTitle());
+            statement.setString(12, technical.getWorkingHours());
+            statement.setString(13, technical.getTechnicalSkills());
+            statement.setString(14, technical.getCertifications());
+            statement.setString(15, technical.getWorkLocation());
+            statement.setDate(16, new java.sql.Date(technical.getLastTrainingDate().getTime()));
 
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;  // Return true if insertion is successful, otherwise false
+            return statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return false;
     }
 
-    // Get a Technical record by ID
-    public static Technical getTechnicalById(int id) {
-        // Use explicit JOIN syntax
-        String selectQuery = "SELECT s.id, s.firstName, s.lastName, s.email, s.phoneNumber, s.address, s.hireDate, s.salary, s.status, s.department, s.jobTitle, s.workingHours, " +
-                             "t.technicalSkills, t.certifications, t.workLocation, t.lastTrainingDate " +
-                             "FROM Staff s " +
-                             "JOIN Technical t ON s.id = t.id " +
-                             "WHERE t.id = ?";
-    
-        Technical technical = null;
-    
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(selectQuery)) {
-            // Set the ID parameter in the prepared statement
-            stmt.setInt(1, id);
-    
-            // Execute the query
-            ResultSet rs = stmt.executeQuery();
-    
-            // Check if a result is found
-            if (rs.next()) {
-                technical = new Technical(
-                        rs.getInt("id"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("email"),
-                        rs.getString("phoneNumber"),
-                        rs.getString("address"),
-                        rs.getDate("hireDate"),
-                        rs.getBigDecimal("salary"),
-                        rs.getString("status"),
-                        rs.getString("department"),
-                        rs.getString("jobTitle"),
-                        rs.getString("workingHours"),
-                        rs.getString("technicalSkills"),
-                        rs.getString("certifications"),
-                        rs.getString("workLocation"),
-                        rs.getDate("lastTrainingDate")
-                );
+    // Get a Technical by ID
+    public Technical getTechnicalById(int id) {
+        String query = "SELECT * FROM technical WHERE id = ?";
+
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return extractTechnicalFromResultSet(resultSet);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    
-        return technical;
-    }
-    
-    
 
+        return null;
+    }
 
     // Get all Technical records
-    public static List<Technical> getAllTechnicals() {
-        String selectQuery = "SELECT s.id, s.firstName, s.lastName, s.email, s.phoneNumber, s.address, " +
-                             "s.hireDate, s.salary, s.status, s.department, s.jobTitle, s.workingHours, " +
-                             "t.technicalSkills, t.certifications, t.workLocation, t.lastTrainingDate " +
-                             "FROM Staff s " +
-                             "JOIN Technical t ON s.id = t.id";
-        List<Technical> technicalList = new ArrayList<>();
-    
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(selectQuery)) {
-    
-            ResultSet rs = stmt.executeQuery();
-    
-            while (rs.next()) {
-                Technical technical = new Technical(
-                        rs.getInt("id"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("email"),
-                        rs.getString("phoneNumber"),
-                        rs.getString("address"),
-                        rs.getDate("hireDate"),
-                        rs.getBigDecimal("salary"),
-                        rs.getString("status"),
-                        rs.getString("department"),
-                        rs.getString("jobTitle"),
-                        rs.getString("workingHours"),
-                        rs.getString("technicalSkills"),
-                        rs.getString("certifications"),
-                        rs.getString("workLocation"),
-                        rs.getDate("lastTrainingDate")
-                );
-                technicalList.add(technical);
+    public List<Technical> getAllTechnicals() {
+        List<Technical> technicals = new ArrayList<>();
+        String query = "SELECT * FROM technical";
+
+        try (Connection connection = DbConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                technicals.add(extractTechnicalFromResultSet(resultSet));
             }
-    
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    
-        return technicalList;
-    }
-    
-
-    // Update a Technical record by ID
-    public static boolean updateTechnical(Technical technical) {
-        String updateQuery = "UPDATE Technical SET technicalSkills = ?, certifications = ?, workLocation = ?, lastTrainingDate = ? "
-                + "WHERE id = ?";
-
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-
-            stmt.setString(1, technical.getTechnicalSkills());
-            stmt.setString(2, technical.getCertifications());
-            stmt.setString(3, technical.getWorkLocation());
-            stmt.setDate(4, new java.sql.Date(technical.getLastTrainingDate().getTime()));
-            stmt.setInt(5, technical.getId());
-
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;  // Return true if update is successful, otherwise false
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return technicals;
     }
 
-    // Delete a Technical record by ID
-    public static boolean deleteTechnical(int id) {
-        String deleteQuery = "DELETE FROM Technical WHERE id = ?";
+    // Update a Technical record
+    public boolean updateTechnical(Technical technical) {
+        String query = "UPDATE technical SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, address = ?, hireDate = ?, " +
+                "salary = ?, status = ?, department = ?, jobTitle = ?, workingHours = ?, technicalSkills = ?, certifications = ?, " +
+                "workLocation = ?, lastTrainingDate = ? WHERE id = ?";
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(deleteQuery)) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
-            stmt.setInt(1, id);
-            int rowsDeleted = stmt.executeUpdate();
-            return rowsDeleted > 0;  // Return true if deletion is successful, otherwise false
+            statement.setString(1, technical.getFirstName());
+            statement.setString(2, technical.getLastName());
+            statement.setString(3, technical.getEmail());
+            statement.setString(4, technical.getPhoneNumber());
+            statement.setString(5, technical.getAddress());
+            statement.setDate(6, new java.sql.Date(technical.getHireDate().getTime()));
+            statement.setBigDecimal(7, technical.getSalary());
+            statement.setString(8, technical.getStatus());
+            statement.setString(9, technical.getDepartment());
+            statement.setString(10, technical.getJobTitle());
+            statement.setString(11, technical.getWorkingHours());
+            statement.setString(12, technical.getTechnicalSkills());
+            statement.setString(13, technical.getCertifications());
+            statement.setString(14, technical.getWorkLocation());
+            statement.setDate(15, new java.sql.Date(technical.getLastTrainingDate().getTime()));
+            statement.setInt(16, technical.getId());
+
+            return statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return false;
+    }
+
+    // Delete a Technical record
+    public boolean deleteTechnical(int id) {
+        String query = "DELETE FROM technical WHERE id = ?";
+
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // Helper method to map ResultSet to Technical object
+    private Technical extractTechnicalFromResultSet(ResultSet resultSet) throws SQLException {
+        Technical technical = new Technical();
+        technical.setId(resultSet.getInt("id"));
+        technical.setFirstName(resultSet.getString("firstName"));
+        technical.setLastName(resultSet.getString("lastName"));
+        technical.setEmail(resultSet.getString("email"));
+        technical.setPhoneNumber(resultSet.getString("phoneNumber"));
+        technical.setAddress(resultSet.getString("address"));
+        technical.setHireDate(resultSet.getDate("hireDate"));
+        technical.setSalary(resultSet.getBigDecimal("salary"));
+        technical.setStatus(resultSet.getString("status"));
+        technical.setDepartment(resultSet.getString("department"));
+        technical.setJobTitle(resultSet.getString("jobTitle"));
+        technical.setWorkingHours(resultSet.getString("workingHours"));
+        technical.setTechnicalSkills(resultSet.getString("technicalSkills"));
+        technical.setCertifications(resultSet.getString("certifications"));
+        technical.setWorkLocation(resultSet.getString("workLocation"));
+        technical.setLastTrainingDate(resultSet.getDate("lastTrainingDate"));
+
+        return technical;
     }
 }

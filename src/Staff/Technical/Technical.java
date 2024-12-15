@@ -8,7 +8,6 @@ import Staff.Staff;
 public class Technical extends Staff {
 
     private String technicalSkills;
-    private int id;
     private String certifications;
     private String workLocation;
     private Date lastTrainingDate;

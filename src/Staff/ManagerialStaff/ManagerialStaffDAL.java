@@ -1,6 +1,9 @@
 package Staff.ManagerialStaff;
 
+
 import Utils.DbConnection;
+
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,133 +11,139 @@ import java.util.List;
 public class ManagerialStaffDAL {
 
     // Insert a new ManagerialStaff record
-    public static boolean insertManagerialStaff(ManagerialStaff managerialStaff) {
-        String insertQuery = "INSERT INTO ManagerialStaff (id, officeLocation, teamSize, reportsTo) VALUES (?, ?, ?, ?)";
+    public boolean insertManagerialStaff(ManagerialStaff managerialStaff) {
+        String query = "INSERT INTO managerialstaff (id, firstName, lastName, email, phoneNumber, address, hireDate, salary, status, department, jobTitle, workingHours, officeLocation, teamSize, reportsTo) "
+                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            // Insert fields of ManagerialStaff class and Staff superclass
-            stmt.setInt(1, managerialStaff.getId());
-            stmt.setString(2, managerialStaff.getOfficeLocation());
-            stmt.setInt(3, managerialStaff.getTeamSize());
-            stmt.setString(4, managerialStaff.getReportsTo());
+            preparedStatement.setInt(1, managerialStaff.getId());
+            preparedStatement.setString(2, managerialStaff.getFirstName());
+            preparedStatement.setString(3, managerialStaff.getLastName());
+            preparedStatement.setString(4, managerialStaff.getEmail());
+            preparedStatement.setString(5, managerialStaff.getPhoneNumber());
+            preparedStatement.setString(6, managerialStaff.getAddress());
+            preparedStatement.setDate(7, new java.sql.Date(managerialStaff.getHireDate().getTime())); // Proper conversion
+            preparedStatement.setBigDecimal(8, managerialStaff.getSalary());
+            preparedStatement.setString(9, managerialStaff.getStatus());
+            preparedStatement.setString(10, managerialStaff.getDepartment());
+            preparedStatement.setString(11, managerialStaff.getJobTitle());
+            preparedStatement.setString(12, managerialStaff.getWorkingHours());
+            preparedStatement.setString(13, managerialStaff.getOfficeLocation());
+            preparedStatement.setInt(14, managerialStaff.getTeamSize());
+            preparedStatement.setString(15, managerialStaff.getReportsTo());
 
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0; // Return true if insertion is successful
+            return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
-    // Retrieve a ManagerialStaff record by ID
-    public static ManagerialStaff getManagerialStaffById(int id) {
-        String selectQuery = "SELECT * FROM ManagerialStaff WHERE id = ?";
-        ManagerialStaff managerialStaff = null;
+    // Get a ManagerialStaff record by ID
+    public ManagerialStaff getManagerialStaffById(int id) {
+        String query = "SELECT * FROM managerialstaff WHERE id = ?";
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(selectQuery)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                managerialStaff = new ManagerialStaff(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("email"),
-                        rs.getString("phone_number"),
-                        rs.getString("address"),
-                        rs.getDate("hire_date"),
-                        rs.getBigDecimal("salary"),
-                        rs.getString("status"),
-                        rs.getString("department"),
-                        rs.getString("job_title"),
-                        rs.getString("working_hours"),
-                        rs.getString("officeLocation"),
-                        rs.getInt("teamSize"),
-                        rs.getString("reportsTo")
-                );
+            if (resultSet.next()) {
+                return mapResultSetToManagerialStaff(resultSet);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return managerialStaff;
+        return null;
     }
 
-    // Retrieve all ManagerialStaff records
-    public static List<ManagerialStaff> getAllManagerialStaff() {
-        String selectQuery = "SELECT * FROM ManagerialStaff";
+    // Get all ManagerialStaff records
+    public List<ManagerialStaff> getAllManagerialStaffs() {
+        String query = "SELECT * FROM managerialstaff";
         List<ManagerialStaff> managerialStaffList = new ArrayList<>();
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(selectQuery)) {
+        try (Connection connection = DbConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
 
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                ManagerialStaff managerialStaff = new ManagerialStaff(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("email"),
-                        rs.getString("phone_number"),
-                        rs.getString("address"),
-                        rs.getDate("hire_date"),
-                        rs.getBigDecimal("salary"),
-                        rs.getString("status"),
-                        rs.getString("department"),
-                        rs.getString("job_title"),
-                        rs.getString("working_hours"),
-                        rs.getString("officeLocation"),
-                        rs.getInt("teamSize"),
-                        rs.getString("reportsTo")
-                );
-                managerialStaffList.add(managerialStaff);
+            while (resultSet.next()) {
+                managerialStaffList.add(mapResultSetToManagerialStaff(resultSet));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return managerialStaffList;
     }
 
-    // Update a ManagerialStaff record by ID
-    public static boolean updateManagerialStaff(ManagerialStaff managerialStaff) {
-        String updateQuery = "UPDATE ManagerialStaff SET officeLocation = ?, teamSize = ?, reportsTo = ? WHERE id = ?";
+    // Update a ManagerialStaff record
+    public boolean updateManagerialStaff(ManagerialStaff managerialStaff) {
+        String query = "UPDATE managerialstaff SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, address = ?, hireDate = ?, salary = ?, status = ?, department = ?, jobTitle = ?, workingHours = ?, officeLocation = ?, teamSize = ?, reportsTo = ? WHERE id = ?";
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            stmt.setString(1, managerialStaff.getOfficeLocation());
-            stmt.setInt(2, managerialStaff.getTeamSize());
-            stmt.setString(3, managerialStaff.getReportsTo());
-            stmt.setInt(4, managerialStaff.getId());
+            preparedStatement.setString(1, managerialStaff.getFirstName());
+            preparedStatement.setString(2, managerialStaff.getLastName());
+            preparedStatement.setString(3, managerialStaff.getEmail());
+            preparedStatement.setString(4, managerialStaff.getPhoneNumber());
+            preparedStatement.setString(5, managerialStaff.getAddress());
+            preparedStatement.setDate(6, new java.sql.Date(managerialStaff.getHireDate().getTime())); // Proper conversion
+            preparedStatement.setBigDecimal(7, managerialStaff.getSalary());
+            preparedStatement.setString(8, managerialStaff.getStatus());
+            preparedStatement.setString(9, managerialStaff.getDepartment());
+            preparedStatement.setString(10, managerialStaff.getJobTitle());
+            preparedStatement.setString(11, managerialStaff.getWorkingHours());
+            preparedStatement.setString(12, managerialStaff.getOfficeLocation());
+            preparedStatement.setInt(13, managerialStaff.getTeamSize());
+            preparedStatement.setString(14, managerialStaff.getReportsTo());
+            preparedStatement.setInt(15, managerialStaff.getId());
 
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0; // Return true if update is successful
+            return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     // Delete a ManagerialStaff record by ID
-    public static boolean deleteManagerialStaff(int id) {
-        String deleteQuery = "DELETE FROM ManagerialStaff WHERE id = ?";
+    public boolean deleteManagerialStaff(int id) {
+        String query = "DELETE FROM managerialstaff WHERE id = ?";
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(deleteQuery)) {
-
-            stmt.setInt(1, id);
-            int rowsDeleted = stmt.executeUpdate();
-            return rowsDeleted > 0; // Return true if deletion is successful
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
+    }
+
+    // Helper method to map a ResultSet to a ManagerialStaff object
+    private ManagerialStaff mapResultSetToManagerialStaff(ResultSet resultSet) throws SQLException {
+        ManagerialStaff managerialStaff = new ManagerialStaff();
+        managerialStaff.setId(resultSet.getInt("id"));
+        managerialStaff.setFirstName(resultSet.getString("firstName"));
+        managerialStaff.setLastName(resultSet.getString("lastName"));
+        managerialStaff.setEmail(resultSet.getString("email"));
+        managerialStaff.setPhoneNumber(resultSet.getString("phoneNumber"));
+        managerialStaff.setAddress(resultSet.getString("address"));
+        managerialStaff.setHireDate(resultSet.getDate("hireDate")); // Direct from ResultSet
+        managerialStaff.setSalary(resultSet.getBigDecimal("salary"));
+        managerialStaff.setStatus(resultSet.getString("status"));
+        managerialStaff.setDepartment(resultSet.getString("department"));
+        managerialStaff.setJobTitle(resultSet.getString("jobTitle"));
+        managerialStaff.setWorkingHours(resultSet.getString("workingHours"));
+        managerialStaff.setOfficeLocation(resultSet.getString("officeLocation"));
+        managerialStaff.setTeamSize(resultSet.getInt("teamSize"));
+        managerialStaff.setReportsTo(resultSet.getString("reportsTo"));
+        return managerialStaff;
     }
 }

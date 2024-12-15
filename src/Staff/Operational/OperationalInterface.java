@@ -20,8 +20,13 @@ public class OperationalInterface {
             System.out.println("6. Exit");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            int choice;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number between 1 and 6.");
+                continue;
+            }
 
             switch (choice) {
                 case 1 -> addOperational();
@@ -38,64 +43,103 @@ public class OperationalInterface {
         }
     }
 
-    // Add a new Operational record
     private static void addOperational() {
-        System.out.println("\n===== Add Operational =====");
-
-        System.out.print("Enter Staff ID: ");
-        int staffId = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        System.out.print("Enter Shift Type: ");
-        String shiftType = scanner.nextLine();
-
-        System.out.print("Enter Location: ");
-        String location = scanner.nextLine();
-
-        System.out.print("Enter Responsibility Level: ");
-        String responsibilityLevel = scanner.nextLine();
-
-        System.out.print("Enter Task Count: ");
-        int taskCount = scanner.nextInt();
-
-        System.out.print("Enter Performance Rating: ");
-        BigDecimal performanceRating = scanner.nextBigDecimal();
-
-        Operational operational = new Operational();
-        operational.setId(staffId);
-        operational.setShiftType(shiftType);
-        operational.setLocation(location);
-        operational.setResponsibilityLevel(responsibilityLevel);
-        operational.setTaskCount(taskCount);
-        operational.setPerformanceRating(performanceRating);
-
-        if (operationalDAL.insertOperational(operational)) {
-            System.out.println("Operational added successfully.");
-        } else {
-            System.out.println("Failed to add operational.");
+        try {
+            System.out.println("\n===== Add Operational =====");
+    
+            System.out.print("Enter Staff ID: ");
+            int staffId = Integer.parseInt(scanner.nextLine());
+    
+            System.out.print("Enter First Name: ");
+            String firstName = scanner.nextLine();
+    
+            System.out.print("Enter Last Name: ");
+            String lastName = scanner.nextLine();
+    
+            System.out.print("Enter Email: ");
+            String email = scanner.nextLine();
+    
+            System.out.print("Enter Phone Number: ");
+            String phoneNumber = scanner.nextLine();
+    
+            System.out.print("Enter Address: ");
+            String address = scanner.nextLine();
+    
+            System.out.print("Enter Hire Date (yyyy-mm-dd): ");
+            java.util.Date hireDate = java.sql.Date.valueOf(scanner.nextLine()); // Using java.sql.Date for conversion
+    
+            System.out.print("Enter Salary: ");
+            BigDecimal salary = new BigDecimal(scanner.nextLine());
+    
+            System.out.print("Enter Status: ");
+            String status = scanner.nextLine();
+    
+            System.out.print("Enter Department: ");
+            String department = scanner.nextLine();
+    
+            System.out.print("Enter Job Title: ");
+            String jobTitle = scanner.nextLine();
+    
+            System.out.print("Enter Working Hours: ");
+            String workingHours = scanner.nextLine();
+    
+            // Operational-specific attributes
+            System.out.print("Enter Shift Type: ");
+            String shiftType = scanner.nextLine();
+    
+            System.out.print("Enter Location: ");
+            String location = scanner.nextLine();
+    
+            System.out.print("Enter Responsibility Level: ");
+            String responsibilityLevel = scanner.nextLine();
+    
+            System.out.print("Enter Task Count: ");
+            int taskCount = Integer.parseInt(scanner.nextLine());
+    
+            System.out.print("Enter Performance Rating: ");
+            BigDecimal performanceRating = new BigDecimal(scanner.nextLine());
+    
+            // Create an Operational object
+            Operational operational = new Operational(
+                staffId, firstName, lastName, email, phoneNumber, address, hireDate,
+                salary, status, department, jobTitle, workingHours, shiftType, location,
+                responsibilityLevel, taskCount, performanceRating
+            );
+    
+            // Insert into the database
+            if (operationalDAL.insertOperational(operational)) {
+                System.out.println("Operational added successfully.");
+            } else {
+                System.out.println("Failed to add operational.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error adding operational. Please ensure all inputs are valid.");
+            e.printStackTrace(); // Optional: Remove this in production
         }
     }
+    
 
-    // View an Operational record by ID
     private static void viewOperationalById() {
-        System.out.println("\n===== View Operational by ID =====");
-        System.out.print("Enter Operational ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        try {
+            System.out.println("\n===== View Operational by ID =====");
+            System.out.print("Enter Operational ID: ");
+            int id = Integer.parseInt(scanner.nextLine());
 
-        Operational operational = OperationalDAL.getOperationalById(id);
-        if (operational != null) {
-            System.out.println("Operational Details: " + operational);
-        } else {
-            System.out.println("No operational found with ID " + id);
+            Operational operational = operationalDAL.getOperationalById(id);
+            if (operational != null) {
+                System.out.println("Operational Details: \n" + operational);
+            } else {
+                System.out.println("No operational found with ID " + id);
+            }
+        } catch (Exception e) {
+            System.out.println("Error retrieving operational. Please ensure the input is valid.");
         }
     }
 
-    // View all Operational records
     private static void viewAllOperationals() {
         System.out.println("\n===== View All Operationals =====");
-        List<Operational> operationalList = OperationalDAL.getAllOperationals();
-        if (operationalList.isEmpty()) {
+        List<Operational> operationalList = operationalDAL.getAllOperationals();
+        if (operationalList == null || operationalList.isEmpty()) {
             System.out.println("No operational records found.");
         } else {
             for (Operational operational : operationalList) {
@@ -104,57 +148,114 @@ public class OperationalInterface {
         }
     }
 
-    // Update an existing Operational record
     private static void updateOperational() {
-        System.out.println("\n===== Update Operational =====");
-        System.out.print("Enter Operational ID to update: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        Operational operational = OperationalDAL.getOperationalById(id);
-        if (operational == null) {
-            System.out.println("No operational found with ID " + id);
-            return;
-        }
-
-        System.out.print("Enter Shift Type (" + operational.getShiftType() + "): ");
-        String shiftType = scanner.nextLine();
-        if (!shiftType.isBlank()) operational.setShiftType(shiftType);
-
-        System.out.print("Enter Location (" + operational.getLocation() + "): ");
-        String location = scanner.nextLine();
-        if (!location.isBlank()) operational.setLocation(location);
-
-        System.out.print("Enter Responsibility Level (" + operational.getResponsibilityLevel() + "): ");
-        String responsibilityLevel = scanner.nextLine();
-        if (!responsibilityLevel.isBlank()) operational.setResponsibilityLevel(responsibilityLevel);
-
-        System.out.print("Enter Task Count (" + operational.getTaskCount() + "): ");
-        int taskCount = scanner.nextInt();
-        operational.setTaskCount(taskCount);
-
-        System.out.print("Enter Performance Rating (" + operational.getPerformanceRating() + "): ");
-        BigDecimal performanceRating = scanner.nextBigDecimal();
-        operational.setPerformanceRating(performanceRating);
-
-        if (operationalDAL.updateOperational(operational)) {
-            System.out.println("Operational updated successfully.");
-        } else {
-            System.out.println("Failed to update operational.");
+        try {
+            System.out.println("\n===== Update Operational =====");
+            System.out.print("Enter Operational ID to update: ");
+            int id = Integer.parseInt(scanner.nextLine());
+    
+            Operational operational = operationalDAL.getOperationalById(id);
+            if (operational == null) {
+                System.out.println("No operational found with ID " + id);
+                return;
+            }
+    
+            // Update fields inherited from Staff
+            System.out.print("Enter First Name (" + operational.getFirstName() + "): ");
+            String firstName = scanner.nextLine();
+            if (!firstName.isBlank()) operational.setFirstName(firstName);
+    
+            System.out.print("Enter Last Name (" + operational.getLastName() + "): ");
+            String lastName = scanner.nextLine();
+            if (!lastName.isBlank()) operational.setLastName(lastName);
+    
+            System.out.print("Enter Email (" + operational.getEmail() + "): ");
+            String email = scanner.nextLine();
+            if (!email.isBlank()) operational.setEmail(email);
+    
+            System.out.print("Enter Phone Number (" + operational.getPhoneNumber() + "): ");
+            String phoneNumber = scanner.nextLine();
+            if (!phoneNumber.isBlank()) operational.setPhoneNumber(phoneNumber);
+    
+            System.out.print("Enter Address (" + operational.getAddress() + "): ");
+            String address = scanner.nextLine();
+            if (!address.isBlank()) operational.setAddress(address);
+    
+            System.out.print("Enter Hire Date (yyyy-mm-dd, current: " + operational.getHireDate() + "): ");
+            String hireDateInput = scanner.nextLine();
+            if (!hireDateInput.isBlank()) {
+                operational.setHireDate(java.sql.Date.valueOf(hireDateInput));
+            }
+    
+            System.out.print("Enter Salary (" + operational.getSalary() + "): ");
+            String salaryInput = scanner.nextLine();
+            if (!salaryInput.isBlank()) operational.setSalary(new BigDecimal(salaryInput));
+    
+            System.out.print("Enter Status (" + operational.getStatus() + "): ");
+            String status = scanner.nextLine();
+            if (!status.isBlank()) operational.setStatus(status);
+    
+            System.out.print("Enter Department (" + operational.getDepartment() + "): ");
+            String department = scanner.nextLine();
+            if (!department.isBlank()) operational.setDepartment(department);
+    
+            System.out.print("Enter Job Title (" + operational.getJobTitle() + "): ");
+            String jobTitle = scanner.nextLine();
+            if (!jobTitle.isBlank()) operational.setJobTitle(jobTitle);
+    
+            System.out.print("Enter Working Hours (" + operational.getWorkingHours() + "): ");
+            String workingHours = scanner.nextLine();
+            if (!workingHours.isBlank()) operational.setWorkingHours(workingHours);
+    
+            // Update fields specific to Operational
+            System.out.print("Enter Shift Type (" + operational.getShiftType() + "): ");
+            String shiftType = scanner.nextLine();
+            if (!shiftType.isBlank()) operational.setShiftType(shiftType);
+    
+            System.out.print("Enter Location (" + operational.getLocation() + "): ");
+            String location = scanner.nextLine();
+            if (!location.isBlank()) operational.setLocation(location);
+    
+            System.out.print("Enter Responsibility Level (" + operational.getResponsibilityLevel() + "): ");
+            String responsibilityLevel = scanner.nextLine();
+            if (!responsibilityLevel.isBlank()) operational.setResponsibilityLevel(responsibilityLevel);
+    
+            System.out.print("Enter Task Count (" + operational.getTaskCount() + "): ");
+            String taskCountInput = scanner.nextLine();
+            if (!taskCountInput.isBlank()) operational.setTaskCount(Integer.parseInt(taskCountInput));
+    
+            System.out.print("Enter Performance Rating (" + operational.getPerformanceRating() + "): ");
+            String performanceRatingInput = scanner.nextLine();
+            if (!performanceRatingInput.isBlank()) {
+                operational.setPerformanceRating(new BigDecimal(performanceRatingInput));
+            }
+    
+            // Update in database
+            if (operationalDAL.updateOperational(operational)) {
+                System.out.println("Operational updated successfully.");
+            } else {
+                System.out.println("Failed to update operational.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating operational. Please ensure all inputs are valid.");
+            e.printStackTrace(); // Optional for debugging; remove in production
         }
     }
+    
 
-    // Delete an Operational record by ID
     private static void deleteOperational() {
-        System.out.println("\n===== Delete Operational =====");
-        System.out.print("Enter Operational ID to delete: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        try {
+            System.out.println("\n===== Delete Operational =====");
+            System.out.print("Enter Operational ID to delete: ");
+            int id = Integer.parseInt(scanner.nextLine());
 
-        if (OperationalDAL.deleteOperational(id)) {
-            System.out.println("Operational deleted successfully.");
-        } else {
-            System.out.println("Failed to delete operational.");
+            if (operationalDAL.deleteOperational(id)) {
+                System.out.println("Operational deleted successfully.");
+            } else {
+                System.out.println("Failed to delete operational.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error deleting operational. Please ensure the input is valid.");
         }
     }
 }
