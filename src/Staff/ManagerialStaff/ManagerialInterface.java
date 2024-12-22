@@ -1,4 +1,4 @@
-package Staff.CustomerService;
+package Staff.ManagerialStaff;
 
 import Main.MainInterface;
 
@@ -12,9 +12,9 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.List;
 
-public class CustomerServiceInterface extends Application {
+public class ManagerialInterface extends Application {
 
-    private static final CustomerServiceDAL customerServiceDAL = new CustomerServiceDAL();
+    private static final ManagerialDAL managerialDAL = new ManagerialDAL();
     private Scene initialScene;
     private static final String stylePath = "file:resources/styles.css";
 
@@ -43,24 +43,24 @@ public class CustomerServiceInterface extends Application {
 
         Label title = new Label("Customer Service Management System");
 
-        Button addCustomerServiceButton = new Button("Add Customer Service");
-        Button viewCustomerServicesButton = new Button("View Customer Services");
-        Button updateCustomerServiceButton = new Button("Update Customer Service");
-        Button deleteCustomerServiceButton = new Button("Delete Customer Service");
+        Button addManagerialButton = new Button("Add Customer Service");
+        Button viewManagerialsButton = new Button("View Customer Services");
+        Button updateManagerialButton = new Button("Update Customer Service");
+        Button deleteManagerialButton = new Button("Delete Customer Service");
         Button backButton = new Button("Back");
 
-        addCustomerServiceButton.setOnAction(e -> addCustomerService(stage));
-        viewCustomerServicesButton.setOnAction(e -> viewCustomerServices(stage));
-        updateCustomerServiceButton.setOnAction(e -> updateCustomerService(stage));
-        deleteCustomerServiceButton.setOnAction(e -> deleteCustomerService(stage));
+        addManagerialButton.setOnAction(e -> addManagerial(stage));
+        viewManagerialsButton.setOnAction(e -> viewManagerials(stage));
+        updateManagerialButton.setOnAction(e -> updateManagerial(stage));
+        deleteManagerialButton.setOnAction(e -> deleteManagerial(stage));
         backButton.setOnAction(e -> goBack(stage));
 
-        mainLayout.getChildren().addAll(title, addCustomerServiceButton, viewCustomerServicesButton,
-                updateCustomerServiceButton, deleteCustomerServiceButton, backButton);
+        mainLayout.getChildren().addAll(title, addManagerialButton, viewManagerialsButton,
+                updateManagerialButton, deleteManagerialButton, backButton);
         return mainLayout;
     }
 
-    private void addCustomerService(Stage stage) {
+    private void addManagerial(Stage stage) {
         GridPane gridPane = createFormPane();
 
         TextField staffIdField = createTextField(gridPane, "Staff ID:", 0, 0);
@@ -75,14 +75,12 @@ public class CustomerServiceInterface extends Application {
         TextField departmentField = createTextField(gridPane, "Department:", 4, 1);
         TextField jobTitleField = createTextField(gridPane, "Job Title:", 5, 0);
         TextField workingHoursField = createTextField(gridPane, "Working Hours:", 5, 1);
-        TextField customerSatisfactionScore = createTextField(gridPane, "CustomerService Skills:", 6, 0);
-        TextField languagesSpoken = createTextField(gridPane, "Certifications:", 6, 1);
-        TextField shift = createTextField(gridPane, "Work Location:", 7, 0);
-        TextField feedbackReceived = createTextField(gridPane, "Received Feedback:", 7, 1);
+        TextField officeLocationField = createTextField(gridPane, "Office Location:", 6, 0);
+        TextField teamSizeField = createTextField(gridPane, "Team Size:", 6, 1);
+        TextField reportsToField = createTextField(gridPane, "Reports To:", 7, 0);
 
         Button backButton = new Button("Back");
         gridPane.add(backButton, 0, 12);
-
         Button submitButton = new Button("Submit");
         gridPane.add(submitButton, 1, 12);
 
@@ -90,26 +88,24 @@ public class CustomerServiceInterface extends Application {
 
         submitButton.setOnAction(e -> {
             try {
-                CustomerService customerService = new CustomerService();
-                customerService.setId(Integer.parseInt(staffIdField.getText()));
-                customerService.setFirstName(firstNameField.getText());
-                customerService.setLastName(lastNameField.getText());
-                customerService.setEmail(emailField.getText());
-                customerService.setPhoneNumber(phoneNumberField.getText());
-                customerService.setAddress(addressField.getText());
-                customerService.setHireDate(java.sql.Date.valueOf(hireDateField.getText()));
-                customerService.setSalary(new java.math.BigDecimal(salaryField.getText()));
-                customerService.setStatus(statusField.getText());
-                customerService.setDepartment(departmentField.getText());
-                customerService.setJobTitle(jobTitleField.getText());
-                customerService.setWorkingHours(workingHoursField.getText());
-                customerService
-                        .setCustomerSatisfactionScore(new java.math.BigDecimal(customerSatisfactionScore.getText()));
-                customerService.setLanguagesSpoken(languagesSpoken.getText());
-                customerService.setShift(shift.getText());
-                customerService.setFeedbackReceived(feedbackReceived.getText());
+                Managerial managerial = new Managerial();
+                managerial.setId(Integer.parseInt(staffIdField.getText()));
+                managerial.setFirstName(firstNameField.getText());
+                managerial.setLastName(lastNameField.getText());
+                managerial.setEmail(emailField.getText());
+                managerial.setPhoneNumber(phoneNumberField.getText());
+                managerial.setAddress(addressField.getText());
+                managerial.setHireDate(java.sql.Date.valueOf(hireDateField.getText()));
+                managerial.setSalary(new java.math.BigDecimal(salaryField.getText()));
+                managerial.setStatus(statusField.getText());
+                managerial.setDepartment(departmentField.getText());
+                managerial.setJobTitle(jobTitleField.getText());
+                managerial.setWorkingHours(workingHoursField.getText());
+                managerial.setOfficeLocation(officeLocationField.getText());
+                managerial.setTeamSize(Integer.parseInt(teamSizeField.getText()));
+                managerial.setReportsTo(reportsToField.getText());
 
-                if (customerServiceDAL.insertCustomerService(customerService)) {
+                if (managerialDAL.insertManagerial(managerial)) {
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Customer Service added successfully.");
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Error", "Failed to add Customer Service.");
@@ -127,10 +123,10 @@ public class CustomerServiceInterface extends Application {
         stage.show();
     }
 
-    private void updateCustomerService(Stage stage) {
+    private void updateManagerial(Stage stage) {
         GridPane gridPane = createFormPane();
 
-        Label idLabel = new Label("CustomerService ID:");
+        Label idLabel = new Label("Managerial ID:");
         TextField idField = new TextField();
         gridPane.add(idLabel, 0, 0);
         gridPane.add(idField, 1, 0);
@@ -138,21 +134,21 @@ public class CustomerServiceInterface extends Application {
         Button fetchButton = new Button("Fetch Details");
         gridPane.add(fetchButton, 2, 0);
 
-        TextField firstNameField = createTextField(gridPane, "First Name:", 0, 0);
-        TextField lastNameField = createTextField(gridPane, "Last Name:", 0, 1);
-        TextField emailField = createTextField(gridPane, "Email:", 1, 0);
-        TextField phoneField = createTextField(gridPane, "Phone Number:", 1, 1);
-        TextField addressField = createTextField(gridPane, "Address:", 2, 0);
-        TextField hireDateField = createTextField(gridPane, "Hire Date (yyyy-mm-dd):", 2, 1);
-        TextField salaryField = createTextField(gridPane, "Salary:", 3, 0);
-        TextField statusField = createTextField(gridPane, "Status:", 3, 1);
-        TextField departmentField = createTextField(gridPane, "Department:", 4, 0);
-        TextField jobTitleField = createTextField(gridPane, "Job Title:", 4, 1);
-        TextField workingHoursField = createTextField(gridPane, "Working Hours:", 5, 0);
-        TextField customerSatisfactionScoreField = createTextField(gridPane, "Customer Satisfaction Score:", 5, 1);
-        TextField languagesSpokenField = createTextField(gridPane, "Languages Spoken:", 6, 0);
-        TextField shiftField = createTextField(gridPane, "Shift:", 6, 1);
-        TextField feedbackReceivedField = createTextField(gridPane, "Received Feedback:", 7, 0);
+        TextField firstNameField = createTextField(gridPane, "First Name:", 1, 0);
+        TextField lastNameField = createTextField(gridPane, "Last Name:", 1, 1);
+        TextField emailField = createTextField(gridPane, "Email:", 2, 0);
+        TextField phoneField = createTextField(gridPane, "Phone Number:", 2, 1);
+        TextField addressField = createTextField(gridPane, "Address:", 3, 0);
+        TextField hireDateField = createTextField(gridPane, "Hire Date (yyyy-mm-dd):", 3, 1);
+        TextField salaryField = createTextField(gridPane, "Salary:", 4, 0);
+        TextField statusField = createTextField(gridPane, "Status:", 4, 1);
+        TextField departmentField = createTextField(gridPane, "Department:", 5, 0);
+        TextField jobTitleField = createTextField(gridPane, "Job Title:", 5, 1);
+        TextField workingHoursField = createTextField(gridPane, "Working Hours:", 6, 0);
+        TextField customerSatisfactionScoreField = createTextField(gridPane, "Customer Satisfaction Score:", 6, 1);
+        TextField officeLocationField = createTextField(gridPane, "Languages Spoken:", 7, 0);
+        TextField teamSizeField = createTextField(gridPane, "teamSize:", 7, 1);
+        TextField reportsToField = createTextField(gridPane, "Received Feedback:", 8, 0);
 
         Button backButton = new Button("Back");
         gridPane.add(backButton, 0, 12);
@@ -161,23 +157,22 @@ public class CustomerServiceInterface extends Application {
 
         fetchButton.setOnAction(e -> {
             int id = Integer.parseInt(idField.getText());
-            CustomerService customerService = customerServiceDAL.getCustomerServiceById(id);
-            if (customerService != null) {
-                firstNameField.setText(customerService.getFirstName());
-                lastNameField.setText(customerService.getLastName());
-                emailField.setText(customerService.getEmail());
-                phoneField.setText(customerService.getPhoneNumber());
-                addressField.setText(customerService.getAddress());
-                hireDateField.setText(customerService.getHireDate().toString());
-                salaryField.setText(customerService.getSalary().toString());
-                statusField.setText(customerService.getStatus());
-                departmentField.setText(customerService.getDepartment());
-                jobTitleField.setText(customerService.getJobTitle());
-                workingHoursField.setText(customerService.getWorkingHours());
-                customerSatisfactionScoreField.setText(customerService.getCustomerSatisfactionScore().toString());
-                languagesSpokenField.setText(customerService.getLanguagesSpoken());
-                shiftField.setText(customerService.getShift());
-                feedbackReceivedField.setText(customerService.getFeedbackReceived().toString());
+            Managerial managerial = managerialDAL.getManagerialById(id);
+            if (managerial != null) {
+                firstNameField.setText(managerial.getFirstName());
+                lastNameField.setText(managerial.getLastName());
+                emailField.setText(managerial.getEmail());
+                phoneField.setText(managerial.getPhoneNumber());
+                addressField.setText(managerial.getAddress());
+                hireDateField.setText(managerial.getHireDate().toString());
+                salaryField.setText(managerial.getSalary().toString());
+                statusField.setText(managerial.getStatus());
+                departmentField.setText(managerial.getDepartment());
+                jobTitleField.setText(managerial.getJobTitle());
+                workingHoursField.setText(managerial.getWorkingHours());
+                officeLocationField.setText(managerial.getOfficeLocation());
+                teamSizeField.setText(Integer.toString(managerial.getTeamSize()));
+                reportsToField.setText(managerial.getReportsTo().toString());
             } else {
                 showAlert(Alert.AlertType.ERROR, "Error", "No Customer Service found with ID " + id);
             }
@@ -196,33 +191,31 @@ public class CustomerServiceInterface extends Application {
             String department = departmentField.getText();
             String jobTitle = jobTitleField.getText();
             String workingHours = workingHoursField.getText();
-            String customerSatisfactionScore = customerSatisfactionScoreField.getText();
-            String languagesSpoken = languagesSpokenField.getText();
-            String shift = shiftField.getText();
-            String feedbackReceived = feedbackReceivedField.getText();
+            String officeLocation = officeLocationField.getText();
+            String teamSize = teamSizeField.getText();
+            String reportsTo = reportsToField.getText();
 
-            CustomerService customerService = customerServiceDAL.getCustomerServiceById(id);
-            if (customerService != null) {
-                customerService.setFirstName(firstName);
-                customerService.setLastName(lastName);
-                customerService.setEmail(email);
-                customerService.setPhoneNumber(phone);
-                customerService.setAddress(address);
-                customerService.setHireDate(java.sql.Date.valueOf(hireDate));
-                customerService.setSalary(new java.math.BigDecimal(salary));
-                customerService.setStatus(status);
-                customerService.setDepartment(department);
-                customerService.setJobTitle(jobTitle);
-                customerService.setWorkingHours(workingHours);
-                customerService.setCustomerSatisfactionScore(new java.math.BigDecimal(customerSatisfactionScore));
-                customerService.setLanguagesSpoken(languagesSpoken);
-                customerService.setShift(shift);
-                customerService.setFeedbackReceived(feedbackReceived);
+            Managerial managerial = managerialDAL.getManagerialById(id);
+            if (managerial != null) {
+                managerial.setFirstName(firstName);
+                managerial.setLastName(lastName);
+                managerial.setEmail(email);
+                managerial.setPhoneNumber(phone);
+                managerial.setAddress(address);
+                managerial.setHireDate(java.sql.Date.valueOf(hireDate));
+                managerial.setSalary(new java.math.BigDecimal(salary));
+                managerial.setStatus(status);
+                managerial.setDepartment(department);
+                managerial.setJobTitle(jobTitle);
+                managerial.setWorkingHours(workingHours);
+                managerial.setOfficeLocation(officeLocation);
+                managerial.setTeamSize(Integer.parseInt(teamSize));
+                managerial.setReportsTo(reportsTo);
 
-                if (customerServiceDAL.updateCustomerService(customerService)) {
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "CustomerService updated successfully.");
+                if (managerialDAL.updateManagerial(managerial)) {
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Managerial updated successfully.");
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to update CustomerService.");
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to update Managerial.");
                 }
             }
         });
@@ -237,7 +230,7 @@ public class CustomerServiceInterface extends Application {
         stage.show();
     }
 
-    private void viewCustomerServices(Stage stage) {
+    private void viewManagerials(Stage stage) {
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
         vbox.setAlignment(Pos.CENTER);
@@ -252,9 +245,9 @@ public class CustomerServiceInterface extends Application {
         viewByIdButton.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(idField.getText());
-                CustomerService customerService = customerServiceDAL.getCustomerServiceById(id);
-                if (customerService != null) {
-                    showAlert(Alert.AlertType.INFORMATION, "Customer Service Details", customerService.toString());
+                Managerial managerial = managerialDAL.getManagerialById(id);
+                if (managerial != null) {
+                    showAlert(Alert.AlertType.INFORMATION, "Customer Service Details", managerial.toString());
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Error", "No Customer Service found with ID: " + id);
                 }
@@ -264,14 +257,14 @@ public class CustomerServiceInterface extends Application {
         });
 
         viewAllButton.setOnAction(e -> {
-            List<CustomerService> customerServices = customerServiceDAL.getAllCustomerServices();
-            if (customerServices.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "View All CustomerServices",
-                        "No CustomerService records found.");
+            List<Managerial> managerials = managerialDAL.getAllManagerials();
+            if (managerials.isEmpty()) {
+                showAlert(Alert.AlertType.INFORMATION, "View All Managerials",
+                        "No Managerial records found.");
             } else {
                 StringBuilder details = new StringBuilder();
-                customerServices.forEach(customerService -> details.append(customerService).append("\n"));
-                showAlert(Alert.AlertType.INFORMATION, "View All CustomerServices", details.toString());
+                managerials.forEach(managerial -> details.append(managerial).append("\n"));
+                showAlert(Alert.AlertType.INFORMATION, "View All Managerials", details.toString());
             }
         });
 
@@ -287,12 +280,12 @@ public class CustomerServiceInterface extends Application {
         stage.show();
     }
 
-    private void deleteCustomerService(Stage stage) {
+    private void deleteManagerial(Stage stage) {
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
         vbox.setAlignment(Pos.CENTER);
 
-        Label idLabel = new Label("Enter CustomerService ID:");
+        Label idLabel = new Label("Enter Managerial ID:");
         TextField idField = new TextField();
         Button deleteButton = new Button("Delete");
 
@@ -300,10 +293,10 @@ public class CustomerServiceInterface extends Application {
 
         deleteButton.setOnAction(e -> {
             int id = Integer.parseInt(idField.getText());
-            if (customerServiceDAL.deleteCustomerService(id)) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "CustomerService deleted successfully.");
+            if (managerialDAL.deleteManagerial(id)) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Managerial deleted successfully.");
             } else {
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete CustomerService.");
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete Managerial.");
             }
         });
 

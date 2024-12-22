@@ -12,13 +12,12 @@ public class GuestStay {
     private String address;
     private int guestId;
     private int bookerId;
-    private Room.RoomType roomType;  // RoomType instead of Room
+    private Room.RoomType roomType;  
     private Date dateIn;
     private Date dateOut;
     private int nightsSpent;
     private double amountToPay;
 
-    // Constructor
     public GuestStay(String idInfo, Date dateOfBirth, String fullName, String contactInfo, String address,
                      int guestId, int bookerId, Room.RoomType roomType, Date dateIn, Date dateOut) {
         this.idInfo = idInfo;
@@ -31,40 +30,35 @@ public class GuestStay {
         this.roomType = roomType;
         this.dateIn = dateIn;
         this.dateOut = dateOut;
-        recalculateFields(); // Initialize dependent fields
+        recalculateFields(); 
     }
 
-    // Recalculate nights spent and amount to pay
     public void recalculateFields() {
         this.nightsSpent = calculateNightsSpent();
         this.amountToPay = calculateAmountToPay();
     }
 
-    // Calculate nights spent
     public int calculateNightsSpent() {
         if (dateIn == null || dateOut == null) {
-            return 0; // Default to 0 if dates are invalid
+            return 0; 
         }
         long diff = dateOut.getTime() - dateIn.getTime();
         return (int) (diff / (1000 * 60 * 60 * 24));
     }
 
-    // Calculate amount to pay
     public double calculateAmountToPay() {
         double basePrice = nightsSpent * getRoomPrice();
 
-        // Apply discount based on age
         if (dateOfBirth != null) {
             long ageInMs = new Date().getTime() - dateOfBirth.getTime();
             int age = (int) (ageInMs / (365.25 * 24 * 60 * 60 * 1000));
             if (age >= 65) {
-                return basePrice * 0.9; // 10% discount for seniors
+                return basePrice * 0.9; 
             }
         }
         return basePrice;
     }
 
-    // Get room price based on type
     private double getRoomPrice() {
         switch (roomType) {
             case S1: return 100;
@@ -79,7 +73,6 @@ public class GuestStay {
         }
     }
 
-    // Getters and Setters
 
     public String getIdInfo() {
         return idInfo;
@@ -95,7 +88,7 @@ public class GuestStay {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-        recalculateFields(); // Update dependent fields
+        recalculateFields(); 
     }
 
     public String getFullName() {
@@ -144,7 +137,7 @@ public class GuestStay {
 
     public void setRoomType(Room.RoomType roomType) {
         this.roomType = roomType;
-        recalculateFields(); // Update dependent fields
+        recalculateFields(); 
     }
 
     public Date getDateIn() {
@@ -153,7 +146,7 @@ public class GuestStay {
 
     public void setDateIn(Date dateIn) {
         this.dateIn = dateIn;
-        recalculateFields(); // Update dependent fields
+        recalculateFields(); 
     }
 
     public Date getDateOut() {
@@ -162,7 +155,7 @@ public class GuestStay {
 
     public void setDateOut(Date dateOut) {
         this.dateOut = dateOut;
-        recalculateFields(); // Update dependent fields
+        recalculateFields(); 
     }
 
     public int getNightsSpent() {
@@ -173,7 +166,6 @@ public class GuestStay {
         return amountToPay;
     }
 
-    // Override toString for better display of information
     @Override
     public String toString() {
         return "Guest ID: " + guestId + ", Booker ID: " + bookerId + ", Room Type: " + roomType +

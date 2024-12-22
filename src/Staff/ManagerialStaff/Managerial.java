@@ -2,16 +2,16 @@ package Staff.ManagerialStaff;
 
 import Staff.Staff;
 
-public class ManagerialStaff extends Staff {
+public class Managerial extends Staff {
 
     private String officeLocation;
     private int teamSize;
     private String reportsTo;
 
-    public ManagerialStaff() {
+    public Managerial() {
     }
 
-    public ManagerialStaff(int id, String firstName, String lastName, String email, String phoneNumber,
+    public Managerial(int id, String firstName, String lastName, String email, String phoneNumber,
                            String address, java.util.Date hireDate, java.math.BigDecimal salary,
                            String status, String department, String jobTitle, String workingHours,
                            String officeLocation, int teamSize, String reportsTo) {
