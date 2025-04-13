@@ -41,4 +41,4 @@ It provides a user-friendly admin interface using **JavaFX** and ensures robust 
 
 ## Screenshots and Interface
 Below are placeholders for screenshots depicting various functionalities of the application. You can add the source of each image manually.
-![TrueCare AI Interface](./src/Resources/1.jpg)
+![](./src/Resources/1.JPG)
