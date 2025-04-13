@@ -10,7 +10,7 @@ This Java desktop application simplifies hotel management by offering key featur
 
 It provides a user-friendly admin interface using **JavaFX** and ensures robust database operations through **MySQL Workbench** integration.
 
-## 🛠 Features
+##  Features
 
 - **JavaFX UI**: Intuitive and responsive desktop interface for administrators  
 - **Room Management**: Add, update, and remove room details  
@@ -41,15 +41,4 @@ It provides a user-friendly admin interface using **JavaFX** and ensures robust 
 
 ## Screenshots and Interface
 Below are placeholders for screenshots depicting various functionalities of the application. You can add the source of each image manually.
-![](./src/Resources/1.JPG)
-![](./src/Resources/2.JPG)
-![](./src/Resources/3.JPG)
-![](./src/Resources/4.JPG)
-![](./src/Resources/5.JPG)
-![](./src/Resources/6.JPG)
-![](./src/Resources/7.JPG)
-![](./src/Resources/8.JPG)
-![](./src/Resources/9.JPG)
-![](./src/Resources/10.JPG)
-![](./src/Resources/11.JPG)
-![](./src/Resources/12.JPG)
+<table> <tr> <td><img src="./src/Resources/1.JPG" width="300"/></td> <td><img src="./src/Resources/2.JPG" width="300"/></td> <td><img src="./src/Resources/3.JPG" width="300"/></td> </tr> <tr> <td><img src="./src/Resources/4.JPG" width="300"/></td> <td><img src="./src/Resources/5.JPG" width="300"/></td> <td><img src="./src/Resources/6.JPG" width="300"/></td> </tr> <tr> <td><img src="./src/Resources/7.JPG" width="300"/></td> <td><img src="./src/Resources/8.JPG" width="300"/></td> <td><img src="./src/Resources/9.JPG" width="300"/></td> </tr> <tr> <td><img src="./src/Resources/10.JPG" width="300"/></td> <td><img src="./src/Resources/11.JPG" width="300"/></td> <td><img src="./src/Resources/12.JPG" width="300"/></td> </tr> </table> ```
