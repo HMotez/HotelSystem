@@ -42,3 +42,14 @@ It provides a user-friendly admin interface using **JavaFX** and ensures robust 
 ## Screenshots and Interface
 Below are placeholders for screenshots depicting various functionalities of the application. You can add the source of each image manually.
 ![](./src/Resources/1.JPG)
+![](./src/Resources/2.JPG)
+![](./src/Resources/3.JPG)
+![](./src/Resources/4.JPG)
+![](./src/Resources/5.JPG)
+![](./src/Resources/6.JPG)
+![](./src/Resources/7.JPG)
+![](./src/Resources/8.JPG)
+![](./src/Resources/9.JPG)
+![](./src/Resources/10.JPG)
+![](./src/Resources/11.JPG)
+![](./src/Resources/12.JPG)
